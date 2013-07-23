@@ -6,13 +6,15 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [enfocus.macros :as em]))
 
-(defn class-selectors [x]
+(defn class-selectors
   "Extract all ids that match selector x and make them id selectors: e.g. #foo."
+  [x]
   (map #(str "#" %)
        (:p (ef/from js/document :p [x] (ef/get-prop :id)))))
 
-(defn default-transition [from to t]
+(defn default-transition
   "Simple simultaneous fade in/out lasting t milliseconds."
+  [from to t]
   (ef/at js/document
          [from] (effects/fade-out t)
          [to]   (effects/fade-in  t)))

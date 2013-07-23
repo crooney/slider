@@ -9,7 +9,6 @@
   :repositories {"sonatype-staging"
                  "https://oss.sonatype.org/content/groups/staging/"}
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [org.clojure/clojurescript "0.0-1845-RC1"]
                  [compojure "1.1.5"]
                  [enfocus "2.0.0-SNAPSHOT"]
                  [org.clojure/core.async "0.1.0-SNAPSHOT"]
@@ -18,9 +17,15 @@
             [lein-ring "0.8.6"]]
   :hooks [leiningen.cljsbuild]
   :cljsbuild {:builds
-              [{:source-paths ["src/cljs"]
+              {:dev
+               {:source-paths ["src/cljs"]
                 :compiler {:output-to "resources/public/js/slider.js"
                            :optimizations :whitespace
-                           :pretty-print true}
-                :jar true}]}
+                           :pretty-print true}}
+               :prod
+               {:source-paths ["src/cljs"]
+                :compiler {:output-to "resources/public/js/slider.js"
+                           :optimizations :advanced
+                           :pretty-print false}
+                :jar true}}}
   :ring {:handler crooney.server/app})
