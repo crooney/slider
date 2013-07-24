@@ -23,7 +23,7 @@
          [from] (effects/fade-out t)
          [to]   (effects/fade-in  t)))
 
-(defn start
+(defn ^:export start
   "Start an indefinite slideshow of children of div 'id' that have the 'pane'
   class. If div 'id' also has children of the button class the first two act
   as backward and forward buttons in that order. There is a period of 'pause'
@@ -55,7 +55,7 @@
            :pause [cc] (ef/get-attr :data-pause)
            :trans-time [cc] (ef/get-attr :data-trans-time)))
 
-(defn start-all
+(defn ^:export start-all
   "Start all sliders on page. Sliders have class 'slider' and should have
   the attributes 'data-pause' and 'data-trans-time' set to integer values,
   which will be passed to start. 'default-transition' is used."
@@ -65,5 +65,3 @@
                 (:id ss)
                 (map int (:pause ss))
                 (map int (:trans-time ss))))))
-
-(set! (.-onload js/window) (start-all))
