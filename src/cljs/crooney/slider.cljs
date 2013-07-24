@@ -45,5 +45,7 @@
             (transition (first is) (first js) trans-time)
             (recur js))))))
 
-(set! (.-onload js/window) #(start-slider "example" 4000 500 default-transition))
+(set! (.-onload js/window) #((start-slider "example" 3000 300 default-transition)
+                             (start-slider "octo" 6000 1000 default-transition)
+                             (start-slider "topper" 4000 500 default-transition)))
 
