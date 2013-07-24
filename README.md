@@ -10,7 +10,7 @@ slider uses core.async to avoid callbacks and enfocus for DOM manipulation.
 
 Slideshows should be a relatively positioned div with class `slider`. It should have as children an arbitrary number of absolutely positioned elements of class `pane`. If backward and forward buttons are desired, the should have the class `button`. The first `button` is back and the second forward.
 
-To start automatically, slideshows need the slider div to have `data-pause` and `data-trans-time` attributes, which specify the delay and transition times in milliseconds. The only script then necessary for any amount of slideshows is `<script>window.onload=crooney.slider.start_all</script>`.
+To start automatically, slideshows need the slider div to have `data-delay` and `data-trans-time` attributes, which specify the delay and transition times in milliseconds. The only script then necessary for any amount of slideshows is `<script>window.onload=crooney.slider.start_all</script>`.
 
 To start individually through javascript the call is `crooney.slider.start(` *id,delay,transition-time* `)`.
 
@@ -18,7 +18,7 @@ To start individually through javascript the call is `crooney.slider.start(` *id
 
 The following makes a 4 image slideshow with 4.8 seconds between slides and .8 seconds for transition. Note that transition time is included in the delay: total time is 4.8 not 5.6.
 ```html
-<div id="octo" class="slider" data-pause="4800" data-trans-time="800">
+<div id="octo" class="slider" data-delay="4800" data-trans-time="800">
     <img id="u7"  class="pane" src="//octodex.github.com/images/total-eclipse-of-the-octocat.jpg" style="opacity: 1;"/>
     <img id="u8"  class="pane" src="//octodex.github.com/images/scottocat.jpg" />
     <img id="u9"  class="pane" src="//octodex.github.com/images/octonaut.jpg" />

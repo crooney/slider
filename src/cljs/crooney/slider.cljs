@@ -26,13 +26,13 @@
 (defn ^:export start
   "Start an indefinite slideshow of children of div 'id' that have the 'pane'
   class. If div 'id' also has children of the button class the first two act
-  as backward and forward buttons in that order. There is a period of 'pause'
+  as backward and forward buttons in that order. There is a period of 'delay'
   milliseconds between slides and each transition lasts 'trans-time'.
-  'trans-time' is part of the 'pause', and not additional. 'pane's should have
+  'trans-time' is part of the 'delay', and not additional. 'pane's should have
   absolute position and fill 100% of the parent div 'id'. 'transition' should
   be a function taking from and to selectors followed by 'trans-time'.
   The default transition is a simultaneous fade in/out."
-  ([id pause trans-time transition]
+  ([id delay trans-time transition]
   (let [ps (class-selectors id ".pane")
         bs (class-selectors id ".button")
         c (chan)
@@ -41,27 +41,27 @@
       (ef/at js/document
              [(first bs)] (btn-click (dec (count ps)))
              [(second bs)] (btn-click 1)))
-    (when (pos? pause)
-      (go (while true (<! (timeout pause)) (>! c 1))))
+    (when (pos? delay)
+      (go (while true (<! (timeout delay)) (>! c 1))))
     (go (loop [is (cycle ps)]
           (let [js (drop (<! c) is)]
             (transition (first is) (first js) trans-time)
             (recur js))))))
-  ([id pause trans-time] (start id pause trans-time default-transition)))
+  ([id delay trans-time] (start id delay trans-time default-transition)))
 
 (defn- extract-times [cc]
   (ef/from js/document
            :id [cc] (ef/get-prop :id)
-           :pause [cc] (ef/get-attr :data-pause)
+           :delay [cc] (ef/get-attr :data-delay)
            :trans-time [cc] (ef/get-attr :data-trans-time)))
 
 (defn ^:export start-all
   "Start all sliders on page. Sliders have class 'slider' and should have
-  the attributes 'data-pause' and 'data-trans-time' set to integer values,
+  the attributes 'data-delay' and 'data-trans-time' set to integer values,
   which will be passed to start. 'default-transition' is used."
   []
   (let [ss (extract-times ".slider")]
     (dorun (map start
                 (:id ss)
-                (map int (:pause ss))
+                (map int (:delay ss))
                 (map int (:trans-time ss))))))
