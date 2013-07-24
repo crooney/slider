@@ -29,8 +29,9 @@
   be a function taking from and to selectors followed by 'trans-time'.
   'default-transition' provides a pleasing fade in/out."
   [id pause trans-time transition]
-  (let [ps (class-selectors ".pane")
-        bs (class-selectors ".button")
+  (let [pre (when id (str "#" id " "))
+        ps (class-selectors (str pre ".pane"))
+        bs (class-selectors (str pre ".button"))
         c (chan)
         btn-click (fn [x] (events/listen :click #(go (>! c x))))]
     (when (> (count bs) 1)
