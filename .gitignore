@@ -3,6 +3,7 @@
 /classes
 /checkouts
 /resources/public/js/*
+/resources/public/img/*
 /out
 /repl
 /doc
