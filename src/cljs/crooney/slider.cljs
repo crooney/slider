@@ -8,9 +8,13 @@
 
 (defn class-selectors
   "Extract all ids that match selector x and make them id selectors: e.g. #foo."
-  [x]
-  (map #(str "#" %)
-       (:p (ef/from js/document :p [x] (ef/get-prop :id)))))
+  [id cc]
+  (let [pre (when id (str "#" id " "))]
+    (->> (ef/get-prop :id)
+         (ef/from js/document :workaround [(str pre cc)])
+         (:workaround)
+         (remove nil?)
+         (map (partial str pre "#")))))
 
 (defn default-transition
   "Simple simultaneous fade in/out lasting t milliseconds."
@@ -27,11 +31,10 @@
   'trans-time' is part of the 'pause', and not additional. 'pane's should have
   absolute position and fill 100% of the parent div 'id'. 'transition' should
   be a function taking from and to selectors followed by 'trans-time'.
-  'default-transition' provides a pleasing fade in/out."
-  [id pause trans-time transition]
-  (let [pre (when id (str "#" id " "))
-        ps (class-selectors (str pre ".pane"))
-        bs (class-selectors (str pre ".button"))
+  The default transition is a simultaneous fade in/out."
+  ([id pause trans-time transition]
+  (let [ps (class-selectors id ".pane")
+        bs (class-selectors id ".button")
         c (chan)
         btn-click (fn [x] (events/listen :click #(go (>! c x))))]
     (when (> (count bs) 1)
