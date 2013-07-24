@@ -6,7 +6,7 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [enfocus.macros :as em]))
 
-(defn class-selectors
+(defn- class-selectors
   "Extract all ids that match selector x and make them id selectors: e.g. #foo."
   [id cc]
   (let [pre (when id (str "#" id " "))]
@@ -16,14 +16,14 @@
          (remove nil?)
          (map (partial str pre "#")))))
 
-(defn default-transition
+(defn- default-transition
   "Simple simultaneous fade in/out lasting t milliseconds."
   [from to t]
   (ef/at js/document
          [from] (effects/fade-out t)
          [to]   (effects/fade-in  t)))
 
-(defn start-slider
+(defn start
   "Start an indefinite slideshow of children of div 'id' that have the 'pane'
   class. If div 'id' also has children of the button class the first two act
   as backward and forward buttons in that order. There is a period of 'pause'
@@ -47,8 +47,23 @@
           (let [js (drop (<! c) is)]
             (transition (first is) (first js) trans-time)
             (recur js))))))
+  ([id pause trans-time] (start id pause trans-time default-transition)))
 
-(set! (.-onload js/window) #((start-slider "example" 3000 300 default-transition)
-                             (start-slider "octo" 6000 1000 default-transition)
-                             (start-slider "topper" 4000 500 default-transition)))
+(defn- extract-times [cc]
+  (ef/from js/document
+           :id [cc] (ef/get-prop :id)
+           :pause [cc] (ef/get-attr :data-pause)
+           :trans-time [cc] (ef/get-attr :data-trans-time)))
 
+(defn start-all
+  "Start all sliders on page. Sliders have class 'slider' and should have
+  the attributes 'data-pause' and 'data-trans-time' set to integer values,
+  which will be passed to start. 'default-transition' is used."
+  []
+  (let [ss (extract-times ".slider")]
+    (dorun (map start
+                (:id ss)
+                (map int (:pause ss))
+                (map int (:trans-time ss))))))
+
+(set! (.-onload js/window) (start-all))
