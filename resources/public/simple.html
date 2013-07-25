@@ -6,6 +6,9 @@
 <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+
 <style type="text/css">
 .slider {
     position: relative;
@@ -55,15 +58,18 @@
 #topper .button {
     width: 100%;
     height: 10%;
+    line-height: 55px;
     left: 0%;
 }
 .sliderForwardFrom{
     animation: toLeft 0.6s ease-in 0.8s both;
-    webkit-animation: toLeft 0.6s ease-in 0.8s both;
+    -webkit-animation: toLeft 0.6s ease-in 0.8s both;
+    opacity: 0;
 }
 .sliderForwardTo{
     animation: fromRight 0.6s ease-in 0.8s both;
-    webkit-animation: fromRight 0.6s ease-in 0.8s both;
+    -webkit-animation: fromRight 0.6s ease-in 0.8s both;
+    opacity: 1;
 }
 @keyframes fromRight {
     0%{ left: 90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
@@ -73,19 +79,37 @@
     0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
     100%{ left: -20%; opacity: 0; height: 30%; width: 30%; top:70%}
 }
+@-webkit-keyframes fromRight {
+    0%{ left: 90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
+    100%{ left: 0%; opacity: 1; height: 100%; width: 100%: top: 0%;}
+}
+@-webkit-keyframes toLeft {
+    0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
+    100%{ left: -20%; opacity: 0; height: 30%; width: 30%; top:70%}
+}
 .sliderBackwardFrom{
     animation: toRight 0.6s ease-in 0.8s both;
     webkit-animation: toRight 0.6s ease-in 0.8s both;
+    opacity: 0;
 }
 .sliderBackwardTo{
     animation: fromLeft 0.6s ease-in 0.8s both;
     webkit-animation: fromLeft 0.6s ease-in 0.8s both;
+    opacity: 1;
 }
 @keyframes fromLeft {
     0%{ left: -90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
     100%{ left: 0%; opacity: 1; height: 100%; width: 100%: top: 0%;}
 }
 @keyframes toRight {
+    0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
+    100%{ left: 120%; opacity: 0; height: 30%; width: 30%; top:70%}
+}
+@-webkit-keyframes fromLeft {
+    0%{ left: -90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
+    100%{ left: 0%; opacity: 1; height: 100%; width: 100%: top: 0%;}
+}
+@-webkit-keyframes toRight {
     0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
     100%{ left: 120%; opacity: 0; height: 30%; width: 30%; top:70%}
 }
@@ -97,8 +121,8 @@
     <img id="u8"  class="pane" src="//octodex.github.com/images/scottocat.jpg" />
     <img id="u9"  class="pane" src="//octodex.github.com/images/octonaut.jpg" />
     <img id="u10"  class="pane" src="//octodex.github.com/images/pacman-ghosts.jpg" />
-    <div id="leftbutton" class="button" style="left:0%">&lt;&lt;</div>
-    <div id="rightbutton" class="button" style="left:80%">&gt;&gt;</div>
+    <div id="leftbutton" class="button" style="left:0%"><i class="icon-arrow-left icon-2x"></i></div>
+    <div id="rightbutton" class="button" style="left:80%"><i class="icon-arrow-right icon-2x"></i></div>
 </div>
 <br/>
 <div id="topper" class="slider" data-delay="4000" data-trans-time="500" data-transition="default">
@@ -108,8 +132,8 @@
     <img id="u4"  class="pane" src="//octodex.github.com/images/dolla-dolla-bill-yall.jpg" />
     <img id="u5"  class="pane" src="//octodex.github.com/images/drunktocat.jpg" />
     <img id="u6"  class="pane" src="//octodex.github.com/images/notocat.jpg" />
-    <div id="topbutton" class="button" style="top:0%">^^</div>
-    <div id="botbutton" class="button" style="top:90%">vv</div>
+    <div id="topbutton" class="button" style="top:0%"><i class="icon-arrow-up icon-2x"></i></div>
+    <div id="botbutton" class="button" style="top:90%"><i class="icon-arrow-down icon-2x"></i></div>
 </div>
 
 <script src="js/slider.js"></script>
