@@ -39,48 +39,69 @@
     line-height: 300px;
     text-align: center;
 }
-#example .pane {
-    font-size: 128;
-}
 #octo, #topper {
     height: 424px;
     width: 424px;
 }
 #octo .button {
-    color: #F00;
-    background-color: #F55;
+    color: #555;
+    background-color: #FFF;
     line-height: 424px;
     width: 20%;
 }
 #octo .button:hover {
-    opacity: .9;
+    opacity: .6;
 }
 #topper .button {
     width: 100%;
     height: 10%;
     left: 0%;
 }
+.sliderForwardFrom{
+    animation: toLeft 0.6s ease-in 0.8s both;
+    webkit-animation: toLeft 0.6s ease-in 0.8s both;
+}
+.sliderForwardTo{
+    animation: fromRight 0.6s ease-in 0.8s both;
+    webkit-animation: fromRight 0.6s ease-in 0.8s both;
+}
+@keyframes fromRight {
+    0%{ left: 90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
+    100%{ left: 0%; opacity: 1; height: 100%; width: 100%: top: 0%;}
+}
+@keyframes toLeft {
+    0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
+    100%{ left: -20%; opacity: 0; height: 30%; width: 30%; top:70%}
+}
+.sliderBackwardFrom{
+    animation: toRight 0.6s ease-in 0.8s both;
+    webkit-animation: toRight 0.6s ease-in 0.8s both;
+}
+.sliderBackwardTo{
+    animation: fromLeft 0.6s ease-in 0.8s both;
+    webkit-animation: fromLeft 0.6s ease-in 0.8s both;
+}
+@keyframes fromLeft {
+    0%{ left: -90%; opacity: 0; height: 30%; width: 30%; top: 70%;}
+    100%{ left: 0%; opacity: 1; height: 100%; width: 100%: top: 0%;}
+}
+@keyframes toRight {
+    0%{ left: 0%; opacity: 1; height: 100%; width: 100%;}
+    100%{ left: 120%; opacity: 0; height: 30%; width: 30%; top:70%}
+}
 </style>
 </head>
 <body>
-<div id="octo" class="slider" data-delay="4800" data-trans-time="800">
+<div id="octo" class="slider" data-delay="4800" data-trans-time="800" data-transition="css">
     <img id="u7"  class="pane" src="//octodex.github.com/images/total-eclipse-of-the-octocat.jpg" style="opacity: 1;"/>
     <img id="u8"  class="pane" src="//octodex.github.com/images/scottocat.jpg" />
     <img id="u9"  class="pane" src="//octodex.github.com/images/octonaut.jpg" />
     <img id="u10"  class="pane" src="//octodex.github.com/images/pacman-ghosts.jpg" />
-    <div id="leftbutton" class="button" style="left:0%">back</div>
-    <div id="rightbutton" class="button" style="left:80%">ahead</div>
-</div>
-<br/>
-<div id="example" class="slider" data-delay="3000" data-trans-time="300" style="height:300px;width:600px;">
-    <div id="foo" class="pane" style="color:#ff0000;background-color:#330000;opacity:1;">what</div>
-    <div id="bar" class="pane" style="color:#0000ff;background-color:#AAAA44">ugly</div>
-    <div id="baz" class="pane" style="color:#00ff00;background-color:#626">colors</div>
     <div id="leftbutton" class="button" style="left:0%">&lt;&lt;</div>
-    <div id="rightbutton" class="button" style="left:90%">&gt;&gt;</div>
+    <div id="rightbutton" class="button" style="left:80%">&gt;&gt;</div>
 </div>
 <br/>
-<div id="topper" class="slider" data-delay="4000" data-trans-time="500">
+<div id="topper" class="slider" data-delay="4000" data-trans-time="500" data-transition="default">
     <img id="u1"  class="pane" src="//octodex.github.com/images/andycat.jpg" style="opacity: 1;"/>
     <img id="u2"  class="pane" src="//octodex.github.com/images/cloud.jpg" />
     <img id="u3"  class="pane" src="//octodex.github.com/images/benevocats.png" />
