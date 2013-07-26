@@ -28,7 +28,7 @@
          [from] (effects/fade-out t)
          [to]   (effects/fade-in  t)))
 
-(def ^:private css-classes ["sliderForwardTo" "sliderForwardFrom"
+(def ^:private css-classes ["sliderActive" "sliderForwardTo" "sliderForwardFrom"
                             "sliderBackwardTo" "sliderBackwardFrom"])
 (defn- class-transition
   "Applies a class of 'sliderForwardTo' to the 'to' arg, and 'sliderForwardFrom'
@@ -40,7 +40,8 @@
            [from] (ef/do-> (apply ef/remove-class css-classes)
                            (ef/add-class f))
            [to]   (ef/do-> (apply ef/remove-class css-classes)
-                           (ef/add-class t)))))
+                           (ef/add-class t)
+                           (ef/add-class "sliderActive")))))
 
 (defn- button-clicks [id c]
   (let [bs (class-selectors id ".btn")
@@ -92,12 +93,8 @@
                             :css class-transition
                             :fade default-transition})
 
-(defn- extract-times [cc]
-  (ef/from js/document
-           :id [cc] (ef/get-prop :id)
-           :pause [cc] (ef/get-attr :data-pause)
-           :transition [cc] (ef/get-attr :data-transition)
-           :trans-time [cc] (ef/get-attr :data-trans-time)))
+(defn- extract [sel f ks]
+  (apply ef/from js/document (mapcat (fn [k] [k [sel] (f k)]) ks)))
 
 (defn ^:export start-all
   "Start all sliders on page. Sliders have class 'slider' and should have
@@ -107,9 +104,10 @@
   []
   (let [f #(if (string? %) [%] %)
         g #(concat (map %2 (f %1)) (repeat %3))
-        {i :id d :pause tt :trans-time t :transition} (extract-times ".slider")]
-    (dorun (map start
-                (f i)
-                (g d int nil)
-                (g tt int nil)
-                (g t #((keyword %) transitions) default-transition)))))
+        as (extract ".slider" ef/get-attr
+                 [:id :data-pause :data-transition :data-trans-time])]
+        (dorun (map start
+                (f (:id as))
+                (g (:data-pause as) int nil)
+                (g (:data-trans-time as) int nil)
+                (g (:data-transition as) #((keyword %) transitions) default-transition)))))
