@@ -105,12 +105,11 @@
   which will be passed to start. If 'data-transition' is not set then
   'default-transition' is used. 'data-transition' may be 'default' or 'css'."
   []
-  (let [ss (extract-times ".slider")
-        f #(if (string? %) [%] %)
-        g #(concat (map %2 (f %1)) (repeat %3))]
+  (let [f #(if (string? %) [%] %)
+        g #(concat (map %2 (f %1)) (repeat %3))
+        {i :id d :delay tt :trans-time t :transition} (extract-times ".slider")]
     (dorun (map start
-                (f (:id ss))
-                (g (:delay ss) int nil)
-                (g (:trans-time ss) int nil)
-                (g (:transition ss) #((keyword %) transitions)
-                   default-transition)))))
+                (f i)
+                (g d int nil)
+                (g tt int nil)
+                (g t #((keyword %) transitions) default-transition)))))
