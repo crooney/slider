@@ -42,8 +42,8 @@
            [to]   (ef/do-> (apply ef/remove-class css-classes)
                            (ef/add-class t)))))
 
-(defn- btn-clicks [id c]
-  (let [bs (class-selectors id ".button")
+(defn- button-clicks [id c]
+  (let [bs (class-selectors id ".btn")
         click (fn [x] (events/listen :click #(go (>! c x))))]
     (when (> (count bs) 1)
       (ef/at js/document
@@ -61,19 +61,19 @@
 
 (defn ^:export start
   "Start an indefinite slideshow of children of div 'id' that have the 'pane'
-  class. If div 'id' also has children of the button class the first two act
-  as forward and backward buttons in that order. There is a period of 'delay'
+  class. If div 'id' also has children of the btn class the first two act
+  as forward and backward buttons in that order. There is a period of 'pause'
   milliseconds between slides and each transition lasts 'trans-time'.
-  'trans-time' is part of the 'delay', and not additional. 'pane's should have
+  'trans-time' is part of the 'pause', and not additional. 'pane's should have
   absolute position and fill 100% of the parent div 'id'. 'transition' should
   be a function taking from and to selectors followed by 'trans-time' and a
   boolean indicating a forward or backward move. The default transition is a
   simultaneous fade in/out."
-  ([id delay trans-time trans]
+  ([id pause trans-time trans]
   (let [ps (class-selectors id ".pane")
         ctrl (chan)]
     (trans nil (first ps) 0 nil)
-    (btn-clicks id ctrl)
+    (button-clicks id ctrl)
     (go (>! ctrl :thaw))
     (go (loop [is (cycle ps) nav (chan)]
           (let [[v c] (alts! [nav ctrl])]
@@ -83,10 +83,10 @@
                 (when-not (zero? v)
                   (trans (first is) (first js) trans-time
                          (when (neg? v) :back)))
-                (go (<! (timeout delay)) (>! nav 1))
+                (go (<! (timeout pause)) (>! nav 1))
                 (recur js nav))))))
     ctrl))
-  ([id delay trans-time] (start id delay trans-time default-transition)))
+  ([id pause trans-time] (start id pause trans-time default-transition)))
 
 (def ^:private transitions {:default default-transition
                             :css class-transition
@@ -95,19 +95,19 @@
 (defn- extract-times [cc]
   (ef/from js/document
            :id [cc] (ef/get-prop :id)
-           :delay [cc] (ef/get-attr :data-delay)
+           :pause [cc] (ef/get-attr :data-pause)
            :transition [cc] (ef/get-attr :data-transition)
            :trans-time [cc] (ef/get-attr :data-trans-time)))
 
 (defn ^:export start-all
   "Start all sliders on page. Sliders have class 'slider' and should have
-  the attributes 'data-delay' and 'data-trans-time' set to integer values,
+  the attributes 'data-pause' and 'data-trans-time' set to integer values,
   which will be passed to start. If 'data-transition' is not set then
   'default-transition' is used. 'data-transition' may be 'default' or 'css'."
   []
   (let [f #(if (string? %) [%] %)
         g #(concat (map %2 (f %1)) (repeat %3))
-        {i :id d :delay tt :trans-time t :transition} (extract-times ".slider")]
+        {i :id d :pause tt :trans-time t :transition} (extract-times ".slider")]
     (dorun (map start
                 (f i)
                 (g d int nil)
