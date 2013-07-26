@@ -6,6 +6,11 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [enfocus.macros :as em]))
 
+;; TODO: fix docstrings
+
+;; diagnostic printing for debugging.  Don't judge me.
+(defn- log [& more] (.log js/console (apply pr-str more)))
+
 (defn- class-selectors
   "Extract all ids that match selector x and make them id selectors: e.g. #foo."
   [id cc]
@@ -37,34 +42,50 @@
            [to]   (ef/do-> (apply ef/remove-class css-classes)
                            (ef/add-class t)))))
 
+(defn- btn-clicks [id c]
+  (let [bs (class-selectors id ".button")
+        click (fn [x] (events/listen :click #(go (>! c x))))]
+    (when (> (count bs) 1)
+      (ef/at js/document
+             [(first bs)] (click :prev)
+             [(second bs)] (click :next)))))
+
+(defn- control [kw nav]
+  (case kw
+    :freeze (chan)
+    :thaw   (do (go (>! nav 0)) nav)
+    (:next :prev) (do (let [c (chan)]
+                    (go (>! c (if (= :next kw) 1 -1)))
+                    c))
+    nav))
+
 (defn ^:export start
   "Start an indefinite slideshow of children of div 'id' that have the 'pane'
   class. If div 'id' also has children of the button class the first two act
-  as backward and forward buttons in that order. There is a period of 'delay'
+  as forward and backward buttons in that order. There is a period of 'delay'
   milliseconds between slides and each transition lasts 'trans-time'.
   'trans-time' is part of the 'delay', and not additional. 'pane's should have
   absolute position and fill 100% of the parent div 'id'. 'transition' should
   be a function taking from and to selectors followed by 'trans-time' and a
   boolean indicating a forward or backward move. The default transition is a
   simultaneous fade in/out."
-  ([id delay trans-time transition]
+  ([id delay trans-time trans]
   (let [ps (class-selectors id ".pane")
-        bs (class-selectors id ".button")
-        c (chan)
-        btn-click (fn [x] (events/listen :click #(go (>! c x))))]
-    #_(js/alert [id ps bs])
-    (when (> (count bs) 1)
-      (ef/at js/document
-             [(first bs)] (btn-click -1)
-             [(second bs)] (btn-click 1)))
-    (when (pos? delay)
-      (go (while true (<! (timeout delay)) (>! c 1))))
-    (go (loop [is (cycle ps)]
-          (let [x (<! c)
-                js (drop (+ (count ps) x) is)]
-            (transition (first is) (first js) trans-time (when (neg? x) :back))
-            (recur js))))
-    c))
+        ctrl (chan)]
+    (trans nil (first ps) 0 nil)
+    (btn-clicks id ctrl)
+    (go (>! ctrl :thaw))
+    (go (loop [is (cycle ps) nav (chan)]
+          (let [[v c] (alts! [nav ctrl])]
+            (if (= c ctrl)
+              (->> (control v nav) (recur is))
+              (let [js (drop (+ v (count ps)) is)]
+                (when-not (zero? v)
+                  (trans (first is) (first js) trans-time
+                         (when (neg? v) :back)))
+                (go (<! (timeout delay)) (>! nav 1))
+                (recur js nav))))))
+    ctrl))
   ([id delay trans-time] (start id delay trans-time default-transition)))
 
 (def ^:private transitions {:default default-transition
@@ -84,10 +105,12 @@
   which will be passed to start. If 'data-transition' is not set then
   'default-transition' is used. 'data-transition' may be 'default' or 'css'."
   []
-  (let [ss (extract-times ".slider")]
+  (let [ss (extract-times ".slider")
+        f #(if (string? %) [%] %)
+        g #(concat (map %2 (f %1)) (repeat %3))]
     (dorun (map start
-                (:id ss)
-                (concat (map int (:delay ss)) (repeat nil))
-                (concat (map int (:trans-time ss)) (repeat nil))
-                (concat (map #((keyword %) transitions) (:transition ss))
-                        (repeat default-transition))))))
+                (f (:id ss))
+                (g (:delay ss) int nil)
+                (g (:trans-time ss) int nil)
+                (g (:transition ss) #((keyword %) transitions)
+                   default-transition)))))
