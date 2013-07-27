@@ -1,4 +1,4 @@
-(ns crooney.slider.examplecss
+(ns example.css
   (:require [garden.core :as g :refer [css]]
             [garden.units :as u :refer [px pt pc]]
             [garden.color :as c :refer [rgb mix lighten darken]]))
@@ -28,8 +28,6 @@
 (def topper [:#topper [:.btn {:width :100% :height :10% :line-height :55px
                               :left :0%}]])
 
-(spit "resources/public/css/example.css"
-      (css {:output-style :expanded} slider octo topper))
-
-
-
+(defn -main [& args]
+  (let [of (if (seq? args) (first args) "resources/public/css/example.css")]
+    (spit of (css {:output-style :expanded} slider octo topper))))
