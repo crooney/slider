@@ -10,6 +10,7 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [compojure "1.1.5"]
                  [enfocus "2.0.0-SNAPSHOT"]
+                 [garden "0.1.0-beta6"]
                  [org.clojure/core.async "0.1.0-SNAPSHOT"]]
   :plugins [[lein-cljsbuild "0.3.2"]]
   :hooks [leiningen.cljsbuild]

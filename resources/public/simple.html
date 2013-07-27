@@ -8,60 +8,9 @@
     <![endif]-->
 
 <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+<link href="css/example.css" rel="stylesheet" type="text/css"/>
 
 <style type="text/css">
-.slider {
-    position: relative;
-    margin: 0 auto;
-    overflow: hidden;
-}
-.btn {
-    color:#fff;
-    background-color:#000;
-    height: 100%;
-    width: 10%;
-    opacity: 0.0;
-    position: absolute;
-    text-align: center;
-    top:0px;
-    user-select: none;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-}
-.btn:hover {
-    opacity: 0.5;
-}
-.pane {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-}
-#example {
-    line-height: 300px;
-    text-align: center;
-}
-#octo, #topper {
-    height: 424px;
-    width: 424px;
-}
-#octo .btn {
-    color: #555;
-    background-color: #FFF;
-    line-height: 424px;
-    width: 20%;
-}
-#octo .btn:hover {
-    opacity: .6;
-}
-#topper .btn {
-    width: 100%;
-    height: 10%;
-    line-height: 55px;
-    left: 0%;
-}
 .sliderForwardFrom{
     animation: toLeft 0.8s;
     -webkit-animation: toLeft 0.8s;
@@ -118,6 +67,16 @@
 </head>
 <body>
 <div id="octo" class="slider" data-pause="3500" data-trans-time="0" data-transition="css">
+    <img id="u7"  class="pane" src="img/total-eclipse-of-the-octocat.jpg" />
+    <img id="u8"  class="pane" src="img/scottocat.jpg" />
+    <img id="u9"  class="pane" src="img/octonaut.jpg" />
+    <img id="u10"  class="pane" src="img/pacman-ghosts.jpg" />
+    <div id="leftbtn" class="btn" style="left:0%"><i class="icon-arrow-left icon-2x"></i></div>
+    <div id="rightbtn" class="btn" style="left:80%"><i class="icon-arrow-right icon-2x"></i></div>
+</div>
+<br/>
+<!--
+<div id="octo" class="slider" data-pause="3500" data-trans-time="0" data-transition="css">
     <img id="u7"  class="pane" src="//octodex.github.com/images/total-eclipse-of-the-octocat.jpg" />
     <img id="u8"  class="pane" src="//octodex.github.com/images/scottocat.jpg" />
     <img id="u9"  class="pane" src="//octodex.github.com/images/octonaut.jpg" />
@@ -136,6 +95,7 @@
     <div id="topbtn" class="btn" style="top:0%"><i class="icon-arrow-up icon-2x"></i></div>
     <div id="botbtn" class="btn" style="top:90%"><i class="icon-arrow-down icon-2x"></i></div>
 </div>
+-->
 <script src="js/slider.js"></script>
 <script>window.onload=crooney.slider.start_all</script>
 </body>

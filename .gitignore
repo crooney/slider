@@ -3,11 +3,12 @@
 /classes
 /checkouts
 /resources/public/js/*
+/resources/public/css/*
 /resources/public/img/*
 /out
 /repl
 /doc
-/src/clj
+/src/clj/crooney/server.clj
 pom.xml
 pom.xml.asc
 *.jar
