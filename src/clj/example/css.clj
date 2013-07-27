@@ -19,7 +19,9 @@
               (mwk :user-select :none)
               [:&:hover {:opacity :.5}]]
              [:.pane {:position :absolute :top :0 :left :0 :height :100%
-                      :width :100%}]])
+                      :width :100%}]
+             [:.sliderInactive {:opacity 0}]
+             [:.sliderActive {:opacity 1}]])
 
 (def octo [:#octo [:.btn {:color :#555 :background-color :#FFF :line-height side
                          :width :20%}
@@ -28,6 +30,17 @@
 (def topper [:#topper [:.btn {:width :100% :height :10% :line-height :55px
                               :left :0%}]])
 
+(def anim-len :0.8s)
+
+(def animation [[:.sliderForwardFrom {:opacity 0}
+                 (mwk :animation [:toLeft anim-len])]
+                [:.sliderForwardTo {:opacity 1}
+                 (mwk :animation [:fromRight anim-len])]
+                [:.sliderBackwardFrom {:opacity 0}
+                 (mwk :animation [:toRight anim-len])]
+                [:.sliderBackwardTo {:opacity 1}
+                 (mwk :animation [:fromLeft anim-len])]])
+
 (defn -main [& args]
   (let [of (if (seq? args) (first args) "resources/public/css/example.css")]
-    (spit of (css {:output-style :expanded} slider octo topper))))
+    (spit of (css {:output-style :expanded} slider octo topper animation))))

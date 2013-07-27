@@ -3,7 +3,7 @@
 /classes
 /checkouts
 /resources/public/js/*
-/resources/public/css/*
+/resources/public/css/example*
 /resources/public/img/*
 /out
 /repl
