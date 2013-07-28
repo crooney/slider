@@ -28,8 +28,9 @@
          [from] (effects/fade-out t)
          [to]   (effects/fade-in  t)))
 
-(def ^:private css-classes ["sliderActive" "sliderForwardTo" "sliderForwardFrom"
-                            "sliderBackwardTo" "sliderBackwardFrom"])
+(def ^:private css-classes ["sliderActive" "sliderInactive" "sliderForwardTo"
+                            "sliderForwardFrom" "sliderBackwardTo"
+                            "sliderBackwardFrom"])
 (defn- class-transition
   "Applies a class of 'sliderForwardTo' to the 'to' arg, and 'sliderForwardFrom'
   to the 'from' arg, unless 'back' is truthy, in which case s/For/Back/g."
@@ -38,10 +39,9 @@
                 ["sliderForwardFrom" "sliderForwardTo"])]
     (ef/at js/document
            [from] (ef/do-> (apply ef/remove-class css-classes)
-                           (ef/add-class f))
+                           (ef/add-class f "sliderInactive"))
            [to]   (ef/do-> (apply ef/remove-class css-classes)
-                           (ef/add-class t)
-                           (ef/add-class "sliderActive")))))
+                           (ef/add-class t "sliderActive")))))
 
 (defn- button-clicks [id c]
   (let [bs (class-selectors id ".btn")
@@ -69,7 +69,8 @@
   absolute position and fill 100% of the parent div 'id'. 'transition' should
   be a function taking from and to selectors followed by 'trans-time' and a
   boolean indicating a forward or backward move. The default transition is a
-  simultaneous fade in/out."
+  simultaneous fade in/out.
+  Returns a core.async channel that understands :freeze :thaw :next and :prev."
   ([id pause trans-time trans]
   (let [ps (class-selectors id ".pane")
         ctrl (chan)]
@@ -89,12 +90,17 @@
     ctrl))
   ([id pause trans-time] (start id pause trans-time default-transition)))
 
+(defn- operate [eff sel f xs]
+  (apply eff js/document
+         (keep identity
+               (mapcat (fn [x] [(when (keyword? x) x) [sel] (f x)]) xs))))
+
+(def extract (partial operate ef/from))
+(def infect (partial operate ef/at))
+
 (def ^:private transitions {:default default-transition
                             :css class-transition
                             :fade default-transition})
-
-(defn- extract [sel f ks]
-  (apply ef/from js/document (mapcat (fn [k] [k [sel] (f k)]) ks)))
 
 (defn ^:export start-all
   "Start all sliders on page. Sliders have class 'slider' and should have
@@ -106,7 +112,8 @@
         g #(concat (map %2 (f %1)) (repeat %3))
         as (extract ".slider" ef/get-attr
                  [:id :data-pause :data-transition :data-trans-time])]
-        (dorun (map start
+    (infect ".pane" ef/add-class ["sliderInactive"])
+    (dorun (map start
                 (f (:id as))
                 (g (:data-pause as) int nil)
                 (g (:data-trans-time as) int nil)
