@@ -6,8 +6,6 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [enfocus.macros :as em]))
 
-;; TODO: fix docstrings
-
 ;; diagnostic printing for debugging.  Don't judge me.
 (defn- log [& more] (.log js/console (apply pr-str more)))
 
@@ -43,7 +41,9 @@
            [to]   (ef/do-> (apply ef/remove-class css-classes)
                            (ef/add-class t "sliderActive")))))
 
-(defn- button-clicks [id c]
+(defn- button-clicks
+  "Assign the transmission of ':next' and ':prev' to forward and back buttons."
+  [id c]
   (let [bs (class-selectors id ".btn")
         click (fn [x] (events/listen :click #(go (>! c x))))]
     (when (> (count bs) 1)
@@ -51,7 +51,9 @@
              [(first bs)] (click :next)
              [(second bs)] (click :prev)))))
 
-(defn- control [kw nav]
+(defn- control
+  "Handle messages received on control channel, as returned by 'start'."
+  [kw nav]
   (case kw
     :freeze (chan)
     :thaw   (do (go (>! nav 0)) nav)
@@ -70,7 +72,8 @@
   be a function taking from and to selectors followed by 'trans-time' and a
   boolean indicating a forward or backward move. The default transition is a
   simultaneous fade in/out.
-  Returns a core.async channel that understands :freeze :thaw :next and :prev."
+  Returns a core.async channel that understands :freeze :thaw :next and :prev
+  with the obvious meanings."
   ([id pause trans-time trans]
   (let [ps (class-selectors id ".pane")
         ctrl (chan)]
@@ -90,13 +93,16 @@
     ctrl))
   ([id pause trans-time] (start id pause trans-time default-transition)))
 
-(defn- operate [eff sel f xs]
-  (apply eff js/document
+(defn- operate
+  "Apply an enfocus func to a selector for all 'xs' in document. Returns result
+  of 'eff' (enfocus func)."
+  [eff sel f xs]
+   (apply eff js/document
          (keep identity
                (mapcat (fn [x] [(when (keyword? x) x) [sel] (f x)]) xs))))
 
-(def extract (partial operate ef/from))
-(def infect (partial operate ef/at))
+(def extract ^{:doc "'operate' on enfocus/from"} (partial operate ef/from))
+(def infect ^{:doc "'operate' on enfocus/at"} (partial operate ef/at))
 
 (def ^:private transitions {:default default-transition
                             :css class-transition
@@ -106,7 +112,8 @@
   "Start all sliders on page. Sliders have class 'slider' and should have
   the attributes 'data-pause' and 'data-trans-time' set to integer values,
   which will be passed to start. If 'data-transition' is not set then
-  'default-transition' is used. 'data-transition' may be 'default' or 'css'."
+  'default-transition' is used. 'data-transition' may be 'default' or 'css'.
+  See 'start', 'default-transition' and 'class-transition'."
   []
   (let [f #(if (string? %) [%] %)
         g #(concat (map %2 (f %1)) (repeat %3))
