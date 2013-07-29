@@ -113,6 +113,7 @@
   the attributes 'data-pause' and 'data-trans-time' set to integer values,
   which will be passed to start. If 'data-transition' is not set then
   'default-transition' is used. 'data-transition' may be 'default' or 'css'.
+  Returns sequence of core.async channels that may be used to control sliders.
   See 'start', 'default-transition' and 'class-transition'."
   []
   (let [f #(if (string? %) [%] %)
@@ -120,8 +121,9 @@
         as (extract ".slider" ef/get-attr
                  [:id :data-pause :data-transition :data-trans-time])]
     (infect ".pane" ef/add-class ["sliderInactive"])
-    (dorun (map start
+    (doall (map start
                 (f (:id as))
                 (g (:data-pause as) int nil)
                 (g (:data-trans-time as) int nil)
-                (g (:data-transition as) #((keyword %) transitions) default-transition)))))
+                (g (:data-transition as) #((keyword %) transitions)
+                   default-transition)))))
