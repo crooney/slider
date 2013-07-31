@@ -1,7 +1,7 @@
 (ns example.css
   (:require [garden.core :as g :refer [css]]
-            [garden.units :as u :refer [px pt pc]]
-            [garden.color :as c :refer [rgb mix lighten darken]]))
+            [garden.util :as u]
+            [garden.compiler :refer [compile-css]]))
 
 (defn prefix [ps]
   (fn [x y]
@@ -41,6 +41,38 @@
                 [:.sliderBackwardTo {:opacity 1}
                  (mwk :animation [:fromLeft anim-len])]])
 
+;; I've got a pull request in to get this into garden
+(defn at-keyframes
+  "Create CSS at-rule(s) for `anim-name`."
+  ([at-names anim-name rules]
+    (let [render #(str "@" (u/to-str %) " " (u/to-str anim-name) " "
+                       (u/left-brace) (compile-css rules) (u/right-brace))]
+    (reduce str (map render at-names))))
+  ([anim-name rules] (at-keyframes ["keyframes"] anim-name rules)))
+
+(def mwk-keyframes (partial at-keyframes ["keyframes" "-moz-keyframes"
+                                          "-webkit-keyframes"]))
+
+(def keyframes
+  (str
+    (mwk-keyframes :fromRight [[:0% {:height :30% :left :90% :top :70%
+                                     :opacity 0 :width :30%}]
+                               [:100% {:height :100% :left :0% :top :0%
+                                       :opacity 1 :width :100%}]])
+    (mwk-keyframes :toRight [[:0% {:height :100% :left :0% :top :0% :opacity 1
+                                   :width :100%}]
+                             [:100% {:height :30% :left :120% :top :70%
+                                     :opacity 0 :width :30%}]])
+    (mwk-keyframes :fromLeft [[:0% {:height :30% :left :-90% :top :70%
+                                    :opacity 0 :width :30%}]
+                              [:100% {:height :100% :left :0% :top :0%
+                                      :opacity 1 :width :100%}]])
+    (mwk-keyframes :toLeft [[:0% {:height :100% :left :0% :top :0% :opacity 1
+                                  :width :100%}]
+                            [:100% {:height :30% :left :-20% :top :70%
+                                    :opacity 0 :width :30%}]])))
+
 (defn -main [& args]
   (let [of (if (seq? args) (first args) "resources/public/css/example.css")]
-    (spit of (css {:output-style :expanded} slider octo topper animation))))
+    (spit of (css {:output-style :expanded}
+                  slider octo topper animation keyframes))))
