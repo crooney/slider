@@ -9,6 +9,7 @@
 /repl
 /doc
 /src/clj/crooney/server.clj
+profiles.clj
 pom.xml
 pom.xml.asc
 *.jar
